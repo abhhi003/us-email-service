@@ -1,0 +1,74 @@
+openapi: 3.0.0
+info:
+  title: Email Service API
+  description: API for sending emails
+  version: 1.0.0
+servers:
+  - url: /email-service
+paths:
+  /send:
+    post:
+      tags:
+        - Email
+      summary: Send an email
+      operationId: sendEmail
+      requestBody:
+        description: Send email payload
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - emailId
+                - subject
+                - message
+              properties:
+                emailId:
+                  type: string
+                  format: email
+                  description: "Recipient's email address"
+                  example: "user@example.com"
+                  pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+                subject:
+                  type: string
+                  description: "Title of the email"
+                  example: "Welcome to our service"
+                message:
+                  type: string
+                  description: "Content of the email"
+                  example: "Thank you for signing up!"
+      responses:
+        '200':
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Email has been sent successfully."
+        '400':
+          description: Bad request due to invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailServiceError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailServiceError'
+components:
+  schemas:
+    EmailServiceError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Invalid email format or missing fields." # Example for 400 response
+        code:
+          type: integer
+          example: 400
